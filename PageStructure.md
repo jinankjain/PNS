@@ -20,9 +20,15 @@ Big Problems:
 - I tried experimenting with GO but I ran into few troubles:
 	- Domains like detail.tmall.com does not have NS records because some other domain is responsible for that part. How to handle this case?
 
+Solution:
+
+- We can have a simple algorithm: it's on my paper right now need to write in documentation
+
 ## Page Structure
 
 Otherwise the page structure would be something like this
+
+Page Information: Version 1
 
 Hash [NS address] [NS IPv4] [NS IPv6 (Optional)] Date of creation
 99464a1c6b08896a33745b78b6aa4dfd88857073f33e9a9dea8a16b9445386a0 [ns4.google.com, ns3.google.com, ns2.google.com, ns1.google.com] [216.239.38.10, 216.239.36.10, 216.239.34.10, 216.239.32.10]		

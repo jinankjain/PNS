@@ -11,12 +11,20 @@ def generate_hash():
 
 	for line in f_iter:
 		temp = line.split()
-		print(temp)
-		print(hashlib.sha256(str(temp[2][1:-1]).encode('utf-8')).hexdigest())
-		# rdata = dns.resolver.query(temp[2][1:-1], 'NS'):
-		for rdata in dns.resolver.query(temp[2][1:-1], 'NS'):
-			print(rdata)
 		sol.append(hashlib.sha256(str(temp[2][1:-1]).encode('utf-8')).hexdigest())
+		temp = temp[2][1:-1]
+		temp = temp.split('.')
+		print(temp)
+		temp = temp[-2] + "." + temp[-1]
+		print(temp)
+		# print(hashlib.sha256(str(temp[2][1:-1]).encode('utf-8')).hexdigest())
+		# rdata = dns.resolver.query(temp[2][1:-1], 'NS'):
+		try:
+			for rdata in dns.resolver.query(temp, 'NS'):
+				print(rdata)
+		except dns.resolver.NoAnswer:
+			print("Here!")
+		
 
 	# sol.sort()
 
