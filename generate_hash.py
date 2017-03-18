@@ -20,6 +20,8 @@ def generate_hash():
 		# print(hashlib.sha256(str(temp[2][1:-1]).encode('utf-8')).hexdigest())
 		# rdata = dns.resolver.query(temp[2][1:-1], 'NS'):
 		try:
+			tem = dns.resolver.query(temp, 'NS')
+			print(tem.response)
 			for rdata in dns.resolver.query(temp, 'NS'):
 				print(rdata)
 		except dns.resolver.NoAnswer:
