@@ -32,6 +32,20 @@ def get_A_record_for_ns(url):
 			ans.append(rdata)
 	except dns.resolver.NoAnswer:
 		ans = ans
+	except dns.resolver.NXDOMAIN:
+		ans = ans
+	except dns.resolver.NoNameservers:
+		ans = ans
+	except dns.resolver.NotAbsolute:
+		ans = ans
+	except dns.resolver.YXDOMAIN:
+		ans = ans
+	except dns.exception.Timeout:
+		ans = ans
+	except dns.exception.NoRootSOA:
+		ans = ans
+	except dns.exception.NotAbsolute:
+		ans = ans
 	return ans
 
 def find_nameserver(url):
