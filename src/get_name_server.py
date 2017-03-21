@@ -29,7 +29,8 @@ def get_A_record_for_ns(url):
 	ans = []
 	try:
 		for rdata in dns.resolver.query(url, 'A'):
-			ans.append(rdata)
+			ans.append(str(rdata))
+			# print(str(rdata))
 	except dns.resolver.NoAnswer:
 		ans = ans
 	except dns.resolver.NXDOMAIN:
@@ -57,4 +58,4 @@ def find_nameserver(url):
 			for ns in check[1]:
 				A_records |= set(get_A_record_for_ns(url))
 	
-	return A_records
+	return " ".join(list(A_records)[0:4])
