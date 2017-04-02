@@ -1,7 +1,8 @@
-from flask import Flask, send_from_directory, request
+from flask import Flask, send_from_directory, request, json
 from src.utils import *
 from src.combine_diff import *
 from src.update_page import *
+from src.crypto import *
 
 import os
 
@@ -12,8 +13,9 @@ TEST_PAGE_STORAGE = "../../test/pages"
 ABS_PATH = os.path.dirname(os.path.realpath('__file__'))
 DIFF_SUFFIX = ".diff"
 
+
 @app.route('/get_page', methods=['GET'])
-def get_page_api( ):
+def get_page_api():
     page_id = request.args.get('pageid')
     version = request.args.get('version')
 
@@ -54,3 +56,17 @@ def update_page_api():
     page_path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
 
     update_page(page_id, entry, a_record, page_path)
+
+
+@app.route('/get_signature', methods=['GET'])
+def compute_signature_api():
+    # GET Parameters
+    page_id = request.args.get('page_id')
+    page_path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
+    signature = compute_signature(page_path, page_id)
+    response = app.response_class(
+        response=json.dumps({'signature': str(signature)}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
