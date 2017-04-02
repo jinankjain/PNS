@@ -41,11 +41,16 @@ def get_page_api( ):
 
 @app.route('/update_page', methods=['GET'])
 def update_page_api():
+    # GET Parameters
     page_id = request.args.get('page_id')
     entry = request.args.get('SHA256')
     a_record = request.args.get('ARecord')
+
+    # Sanitize parameters according to function params
     a_record = a_record.split(",")
     a_record = ' '.join(a_record)
+
+    # Find page path which needs to passed via function
     page_path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
-    print(page_id, page_path, entry, a_record)
+
     update_page(page_id, entry, a_record, page_path)
