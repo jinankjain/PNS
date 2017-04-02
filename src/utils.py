@@ -1,11 +1,8 @@
 import os
-import fileinput
-
-PAGE_STORAGE = "../test/pages"
 
 
-def get_page_current_version( page_id ):
-    page_path = os.path.join(PAGE_STORAGE, page_id)
+def get_page_current_version( page_path, page_id ):
+    page_path = os.path.join(page_path, page_id)
     result = ""
     try:
         version = open(page_path, 'r').readline().split()
@@ -14,8 +11,8 @@ def get_page_current_version( page_id ):
         result = "-1"
     return result
 
-def update_version( page_id ):
-    page_path = os.path.join(PAGE_STORAGE, page_id)
+def update_version( page_path, page_id ):
+    page_path = os.path.join(page_path, page_id)
     result = "Error"
     try:
         version = open(page_path, 'r').readline().split()

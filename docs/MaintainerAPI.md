@@ -24,3 +24,6 @@ These APIs are bascially for the maintainer to update pages and information rela
 ```
 /update_page/page_id=id&entry=SHA256&ARecord=[]
 ```
+
+
+Curve25519
