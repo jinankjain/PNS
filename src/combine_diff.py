@@ -1,5 +1,6 @@
 import os
 import tempfile
+from src.utils import *
 
 PAGE_STORAGE = "pages"
 DIFF_SUFFIX = ".diff"
@@ -31,7 +32,9 @@ class Diff:
         print("New diff file is: ", new_diff_file)
         command = "diff -u " + curr_file_name + " " + copy_file_url + " > " + new_diff_file
         os.system(command)
+        append_signature_diff(new_diff_file)
         return TMP_DIR
+
 
     def generate_diffs(self, new_version, page_id, page_path):
         curr_file_name = os.path.join(page_path, str(page_id))

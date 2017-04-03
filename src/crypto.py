@@ -9,13 +9,21 @@ def generate_pub_private_key():
     open("pns.pub", "wb").write(verifying_key.to_ascii(encoding="hex"))
 
 
-def compute_signature(page_path, page_id):
+def compute_signature_page(page_path, page_id):
     path = os.path.join(page_path, page_id)
     page_data = open(path, 'r').read()
     priv_key_path = os.path.join(SIG_ABS_PATH, "..", "pns")
     seed = open(priv_key_path, "rb").read()
     signing_key = ed25519.SigningKey(seed)
     signature = signing_key.sign(str.encode(page_data), encoding="base64")
+    return signature
+
+
+def compute_signature_diff(diff_content):
+    priv_key_path = os.path.join(SIG_ABS_PATH, "..", "pns")
+    seed = open(priv_key_path, "rb").read()
+    signing_key = ed25519.SigningKey(seed)
+    signature = signing_key.sign(str.encode(diff_content), encoding="base64")
     return signature
 
 

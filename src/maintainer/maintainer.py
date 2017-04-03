@@ -16,7 +16,7 @@ DIFF_SUFFIX = ".diff"
 
 @app.route('/get_page', methods=['GET'])
 def get_page_api():
-    page_id = request.args.get('pageid')
+    page_id = request.args.get('page_id')
     version = request.args.get('version')
 
     # TODO: Perform range check on page_id
@@ -28,7 +28,7 @@ def get_page_api():
         return send_from_directory(path, page_id)
     else:
         # Return the diff from the version passed
-        page_path = os.path.join(ABS_PATH, TEST_PAGE_STORAGE)
+        page_path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
         curr_version = get_page_current_version(page_path, page_id)
 
         if curr_version == version:
@@ -63,9 +63,9 @@ def compute_signature_api():
     # GET Parameters
     page_id = request.args.get('page_id')
     page_path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
-    signature = compute_signature(page_path, page_id)
+    signature = compute_signature_page(page_path, page_id)
     response = app.response_class(
-        response=json.dumps({'signature': str(signature)}),
+        response=json.dumps(str(signature)),
         status=200,
         mimetype='application/json'
     )
