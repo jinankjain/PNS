@@ -1,5 +1,5 @@
-import os
 from src.crypto import *
+
 
 def get_page_current_version( page_path, page_id ):
     page_path = os.path.join(page_path, page_id)

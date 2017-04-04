@@ -27,7 +27,7 @@ def compute_signature_diff(diff_content):
     return signature
 
 
-def verify_signature(signature, page_path, page_id):
+def verify_signature_page(signature, page_path, page_id):
     path = os.path.join(page_path, page_id)
     page_data = open(path, 'r').read()
     pub_key_path = os.path.join(SIG_ABS_PATH, "..", "pns.pub")
@@ -39,3 +39,13 @@ def verify_signature(signature, page_path, page_id):
     except ed25519.BadSignatureError:
         return "Failed"
 
+
+def verify_signature_diff(signature, diff_content):
+    pub_key_path = os.path.join(SIG_ABS_PATH, "..", "pns.pub")
+    vkey_hex = open(pub_key_path, "rb").read()
+    verifying_key = ed25519.VerifyingKey(vkey_hex, encoding="hex")
+    try:
+        verifying_key.verify(signature, diff_content, encoding="base64")
+        return "Success"
+    except ed25519.BadSignatureError:
+        return "Failed"

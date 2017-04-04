@@ -35,7 +35,6 @@ class Diff:
         append_signature_diff(new_diff_file)
         return TMP_DIR
 
-
     def generate_diffs(self, new_version, page_id, page_path):
         curr_file_name = os.path.join(page_path, str(page_id))
         update_file_name = os.path.join(page_path, str(page_id) + "_" + str(new_version))
