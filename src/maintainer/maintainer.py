@@ -1,6 +1,4 @@
 from flask import Flask, send_from_directory, request, json
-from src.utils import *
-from src.combine_diff import *
 from src.update_page import *
 from src.crypto import *
 
@@ -32,7 +30,12 @@ def get_page_api():
         curr_version = get_page_current_version(page_path, page_id)
 
         if curr_version == version:
-            return send_from_directory(page_path, page_id)
+            response = app.response_class(
+                response=json.dumps(str("Updated")),
+                status=200,
+                mimetype='application/json'
+            )
+            return response
         else:
             diff = Diff()
             page_path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
@@ -65,7 +68,7 @@ def compute_signature_api():
     page_path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
     signature = compute_signature_page(page_path, page_id)
     response = app.response_class(
-        response=json.dumps(str(signature)),
+        response=json.dumps(str(signature, 'utf-8')),
         status=200,
         mimetype='application/json'
     )

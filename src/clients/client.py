@@ -1,5 +1,5 @@
 import requests
-from src.crypto import *
+from src.utils import *
 
 API_URL = "http://localhost:5000/"
 CACHE_DIR = ".pns"
@@ -32,15 +32,27 @@ def save_diff(diff_content, page_id, version):
 
 
 def get_page_without_version(page_id):
-    url = "{}get_page".format(API_URL)
-    r = requests.get(url, params={'page_id': page_id})
-    save_page(r.text, page_id)
+    path = os.path.join(USER_DIR, CACHE_DIR)
+    page_path = os.path.join(path, page_id)
+    if os.path.exists(page_path):
+        version = get_page_current_version(path, page_id)
+        get_page_diff_with_version(page_id, version)
+    else:
+        url = "{}get_page".format(API_URL)
+        r = requests.get(url, params={'page_id': page_id})
+        save_page(r.text, page_id)
+        verify_signature(page_id)
 
 
 def get_page_diff_with_version(page_id, version):
     url = "{}get_page".format(API_URL)
     r = requests.get(url, params={'page_id': page_id, 'version': version})
-    save_diff(r.text, page_id, version)
+    if r.text == '"Updated"':
+        return True
+    else:
+        diff_path = save_diff(r.text, page_id, version)
+        old_version_path = os.path.join(USER_DIR, CACHE_DIR, page_id)
+        apply_patch(diff_path, old_version_path)
 
 
 def apply_patch(diff_path, old_version_path):
@@ -48,15 +60,21 @@ def apply_patch(diff_path, old_version_path):
     os.system(command)
 
 
-def verify_signature(page_path, page_id):
+def verify_signature(page_id):
     url = "{}get_signature".format(API_URL)
     r = requests.get(url, params={'page_id': page_id})
-    signature = r.text
+    signature = r.text.split('"')[1]
+    page_path = os.path.join(USER_DIR, CACHE_DIR)
     result = verify_signature_page(signature, page_path, page_id)
+    if result == "Failed":
+        # Don't save the file
+        os.remove(os.path.join(page_path, page_id))
+    else:
+        print("Successfully downloaded the page")
 
 
 def diff_verify_signature(diff_content, signature):
     result = verify_signature_diff(signature, diff_content)
 
 
-get_page_diff_with_version(0, 1)
+get_page_without_version("0")

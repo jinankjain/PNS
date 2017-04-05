@@ -3,6 +3,7 @@ import os
 
 SIG_ABS_PATH = os.path.dirname(os.path.realpath('__file__'))
 
+
 def generate_pub_private_key():
     signing_key, verifying_key = ed25519.create_keypair(entropy=os.urandom)
     open("pns", "wb").write(signing_key.to_seed())
@@ -49,3 +50,5 @@ def verify_signature_diff(signature, diff_content):
         return "Success"
     except ed25519.BadSignatureError:
         return "Failed"
+
+# compute_signature_page("/Users/jinankjain/ETHZ/Research/PNS/src/pages", "0")
