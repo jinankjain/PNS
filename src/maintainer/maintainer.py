@@ -73,3 +73,8 @@ def compute_signature_api():
         mimetype='application/json'
     )
     return response
+
+@app.route('/test_signature', methods=['GET'])
+def approach2():
+    path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
+    return send_from_directory(path, "0_part2")

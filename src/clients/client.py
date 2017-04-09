@@ -64,6 +64,7 @@ def verify_signature(page_id):
     url = "{}get_signature".format(API_URL)
     r = requests.get(url, params={'page_id': page_id})
     signature = r.text.split('"')[1]
+    print(signature)
     page_path = os.path.join(USER_DIR, CACHE_DIR)
     result = verify_signature_page(signature, page_path, page_id)
     if result == "Failed":

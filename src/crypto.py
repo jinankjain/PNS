@@ -13,7 +13,7 @@ def generate_pub_private_key():
 def compute_signature_page(page_path, page_id):
     path = os.path.join(page_path, page_id)
     page_data = open(path, 'r').read()
-    priv_key_path = os.path.join(SIG_ABS_PATH, "..", "pns")
+    priv_key_path = "/Users/jinankjain/ETHZ/Research/PNS/src/pns"
     seed = open(priv_key_path, "rb").read()
     signing_key = ed25519.SigningKey(seed)
     signature = signing_key.sign(str.encode(page_data), encoding="base64")
@@ -21,7 +21,7 @@ def compute_signature_page(page_path, page_id):
 
 
 def compute_signature_diff(diff_content):
-    priv_key_path = os.path.join(SIG_ABS_PATH, "..", "pns")
+    priv_key_path = "/Users/jinankjain/ETHZ/Research/PNS/src/pns"
     seed = open(priv_key_path, "rb").read()
     signing_key = ed25519.SigningKey(seed)
     signature = signing_key.sign(str.encode(diff_content), encoding="base64")
@@ -31,7 +31,22 @@ def compute_signature_diff(diff_content):
 def verify_signature_page(signature, page_path, page_id):
     path = os.path.join(page_path, page_id)
     page_data = open(path, 'r').read()
-    pub_key_path = os.path.join(SIG_ABS_PATH, "..", "pns.pub")
+    pub_key_path = "/Users/jinankjain/ETHZ/Research/PNS/src/pns.pub"
+    vkey_hex = open(pub_key_path, "rb").read()
+    verifying_key = ed25519.VerifyingKey(vkey_hex, encoding="hex")
+    try:
+        verifying_key.verify(signature, str.encode(page_data), encoding="base64")
+        return "Success"
+    except ed25519.BadSignatureError:
+        return "Failed"
+
+
+def verify_signature_page_test(signature, page_path, page_id):
+    path = os.path.join(page_path, page_id)
+    page_data = open(path, 'r').read()
+    page_data = page_data.split('\n')[0:-1]
+    page_data = '\n'.join(page_data)
+    pub_key_path = "/Users/jinankjain/ETHZ/Research/PNS/src/pns.pub"
     vkey_hex = open(pub_key_path, "rb").read()
     verifying_key = ed25519.VerifyingKey(vkey_hex, encoding="hex")
     try:
@@ -42,7 +57,7 @@ def verify_signature_page(signature, page_path, page_id):
 
 
 def verify_signature_diff(signature, diff_content):
-    pub_key_path = os.path.join(SIG_ABS_PATH, "..", "pns.pub")
+    pub_key_path = "/Users/jinankjain/ETHZ/Research/PNS/src/pns.pub"
     vkey_hex = open(pub_key_path, "rb").read()
     verifying_key = ed25519.VerifyingKey(vkey_hex, encoding="hex")
     try:

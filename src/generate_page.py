@@ -7,6 +7,7 @@ INPUT_FILE_NAME = "top_1m.txt"
 PAGE_INDEX = 1
 PAGE_STORAGE = "pages"
 
+
 def generate_page( ):
     f = open(INPUT_FILE_NAME, 'r')
     f_iter = iter(f)
