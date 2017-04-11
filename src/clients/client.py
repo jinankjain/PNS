@@ -31,7 +31,7 @@ def save_diff(diff_content, page_id, version):
     return diff_path
 
 
-def get_page_without_version(page_id, thread_id=None):
+def get_page_without_version(page_id, thread_id=""):
     path = os.path.join(USER_DIR, CACHE_DIR)
     page_path = os.path.join(path, page_id)
     if os.path.exists(page_path):
@@ -52,6 +52,11 @@ def get_page_diff_with_version(page_id, version):
     else:
         diff_path = save_diff(r.text, page_id, version)
         old_version_path = os.path.join(USER_DIR, CACHE_DIR, page_id)
+        diff_content, signature = extract_signature(diff_path)
+        result = diff_verify_signature(diff_content, signature)
+        if result == "Failed":
+            print("Unsuccessful")
+            os.remove(diff_path)
         apply_patch(diff_path, old_version_path)
 
 
@@ -60,7 +65,26 @@ def apply_patch(diff_path, old_version_path):
     os.system(command)
 
 
-def verify_signature(page_id, thread_id=None):
+def extract_signature(diff_path):
+    f = open(diff_path, 'r')
+    start = f.readline()
+    start += f.readline()
+    diff_content = []
+    for c in f:
+        diff_content.append(c)
+    signature = diff_content[-1]
+    diff_content = diff_content[0:-1]
+    diff_content = ''.join(diff_content)
+    # print(diff_content)
+    start += diff_content
+    f.close()
+    # print(signature)
+    f = open(diff_path, 'w+')
+    f.write(start)
+    return diff_content, signature
+
+
+def verify_signature(page_id, thread_id=""):
     url = "{}get_signature".format(API_URL)
     r = requests.get(url, params={'page_id': page_id})
     signature = r.text.split('"')[1]
@@ -69,12 +93,13 @@ def verify_signature(page_id, thread_id=None):
     result = verify_signature_page(signature, page_path, page_id+thread_id)
     if result == "Failed":
         # Don't save the file
-        print("Unsucessful")
+        print("Unsuccessful")
         os.remove(os.path.join(page_path, page_id))
 
 
 def diff_verify_signature(diff_content, signature):
     result = verify_signature_diff(signature, diff_content)
+    return result
 
 
-# get_page_without_version("0")
+get_page_without_version("0")

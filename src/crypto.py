@@ -61,7 +61,7 @@ def verify_signature_diff(signature, diff_content):
     vkey_hex = open(pub_key_path, "rb").read()
     verifying_key = ed25519.VerifyingKey(vkey_hex, encoding="hex")
     try:
-        verifying_key.verify(signature, diff_content, encoding="base64")
+        verifying_key.verify(signature, str.encode(diff_content), encoding="base64")
         return "Success"
     except ed25519.BadSignatureError:
         return "Failed"
