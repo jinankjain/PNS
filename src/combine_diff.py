@@ -47,3 +47,4 @@ class Diff:
         # Remove _diff file
         command = "rm " + update_file_name
         os.system(command)
+        append_signature_diff(new_diff_file)

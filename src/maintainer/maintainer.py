@@ -60,6 +60,13 @@ def update_page_api():
 
     update_page(page_id, entry, a_record, page_path)
 
+    response = app.response_class(
+        response=json.dumps(str("Updated")),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
 
 @app.route('/get_signature', methods=['GET'])
 def compute_signature_api():

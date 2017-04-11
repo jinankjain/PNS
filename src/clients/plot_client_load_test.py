@@ -1,14 +1,13 @@
 import matplotlib.pyplot as plt
 
-x = range(100, 500, 50)
-avg = [0.015680900470470077, 0.018811553126821916, 0.018792622959881555, 0.017270618960028513, 0.01772110528332026, 0.018078685948525422, 0.016113655772496713, 0.016810069302252182]
-total = [1.568092481000349, 2.8217366120079532, 3.758527325990144, 4.317657835024875, 5.316333790018689, 6.327545162988827, 6.44546467094915, 7.564536641002633]
 
-plt.plot(x, avg)
-plt.plot(x, total)
-plt.grid(True)
-ax = plt.gca()
-label_x = ax.set_xlabel('Number of clients', fontsize = 15)
-label_y = ax.set_ylabel('Runtime(in seconds)', fontsize = 15)
-plt.show()
-
+def plot_graph(x, avg, total):
+    fig, ax = plt.subplots()
+    ax.plot(x, avg, label="250")
+    ax.plot(x, total, label="2500")
+    legend = ax.legend(loc='upper center', shadow=True)
+    plt.grid(True)
+    ax = plt.gca()
+    label_x = ax.set_xlabel('Number of clients', fontsize = 15)
+    label_y = ax.set_ylabel('Runtime(in seconds)', fontsize = 15)
+    plt.show()
