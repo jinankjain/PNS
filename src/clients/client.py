@@ -1,5 +1,6 @@
 import requests
 from src.utils import *
+import timeit
 
 API_URL = "http://localhost:5000/"
 CACHE_DIR = ".pns"
@@ -39,9 +40,17 @@ def get_page_without_version(page_id, thread_id=""):
         get_page_diff_with_version(page_id, version)
     else:
         url = "{}get_page".format(API_URL)
+        req = "page_id: {} ".format(page_id)
+        start_time_net = timeit.default_timer()
         r = requests.get(url, params={'page_id': page_id})
         save_page(r.text, page_id+thread_id)
+        ans = timeit.default_timer() - start_time_net
+        req += "net_lat: {} ".format(ans)
+        start_time_ver = timeit.default_timer()
         verify_signature(page_id, thread_id)
+        ans = timeit.default_timer() - start_time_ver
+        req += "ver_time: {}".format(ans)
+        print(req)
 
 
 def get_page_diff_with_version(page_id, version):
@@ -87,7 +96,7 @@ def extract_signature(diff_path):
 def verify_signature(page_id, thread_id=""):
     url = "{}get_signature".format(API_URL)
     r = requests.get(url, params={'page_id': page_id})
-    signature = r.text.split('"')[1]
+    signature = r.text
     # print(signature)
     page_path = os.path.join(USER_DIR, CACHE_DIR)
     result = verify_signature_page(signature, page_path, page_id+thread_id)
@@ -102,4 +111,4 @@ def diff_verify_signature(diff_content, signature):
     return result
 
 
-get_page_without_version("0")
+# get_page_without_version("1")

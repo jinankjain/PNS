@@ -1,5 +1,6 @@
 import ed25519
-import inspect, os
+import inspect
+import os
 
 SIG_ABS_PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 PUB_KEY = "pns.pub"
@@ -67,3 +68,18 @@ def verify_signature_diff(signature, diff_content):
         return "Success"
     except ed25519.BadSignatureError:
         return "Failed"
+
+
+def generate_new_sig_files():
+    x = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+    path_p = "pages"
+
+    for i in x:
+        signature = compute_signature_page(path_p, i)
+        sig = i+".sig"
+        sig = os.path.join(path_p, sig)
+        print(sig)
+        f = open(sig, "w+")
+        f.write(str(signature, 'utf-8'))
+
+# generate_new_sig_files()

@@ -1,7 +1,6 @@
 from flask import Flask, send_from_directory, request, json
 from src.update_page import *
-from src.crypto import *
-
+from src.maintainer.config import huey
 import os
 
 app = Flask(__name__)
@@ -12,6 +11,7 @@ ABS_PATH = os.path.dirname(os.path.realpath('__file__'))
 DIFF_SUFFIX = ".diff"
 
 
+@huey.task()
 @app.route('/get_page', methods=['GET'])
 def get_page_api():
     page_id = request.args.get('page_id')
@@ -19,7 +19,6 @@ def get_page_api():
 
     # TODO: Perform range check on page_id
     # TODO: Perform range check on version number
-
     if version is None:
         # Return the current version of the page
         path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
@@ -73,15 +72,4 @@ def compute_signature_api():
     # GET Parameters
     page_id = request.args.get('page_id')
     page_path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
-    signature = compute_signature_page(page_path, page_id)
-    response = app.response_class(
-        response=json.dumps(str(signature, 'utf-8')),
-        status=200,
-        mimetype='application/json'
-    )
-    return response
-
-@app.route('/test_signature', methods=['GET'])
-def approach2():
-    path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
-    return send_from_directory(path, "0_part2")
+    return send_from_directory(page_path, page_id+".sig")
