@@ -57,10 +57,10 @@ def update_page_api():
     # Find page path which needs to passed via function
     page_path = os.path.join(ABS_PATH, "..", PAGE_STORAGE)
 
-    update_page(page_id, entry, a_record, page_path)
+    update_queue.put((page_id, entry, a_record, page_path))
 
     response = app.response_class(
-        response=json.dumps(str("Updated")),
+        response=json.dumps(str("Will get Updated")),
         status=200,
         mimetype='application/json'
     )

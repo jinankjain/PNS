@@ -1,5 +1,7 @@
 from src.crypto import *
 
+UTIL_ABS_PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
 
 def get_page_current_version( page_path, page_id ):
     page_path = os.path.join(page_path, page_id)
@@ -38,3 +40,27 @@ def append_signature_diff(diff_path):
         diff_content += c
     signature = compute_signature_diff(diff_content)
     f.write(signature.decode("utf-8"))
+
+
+def create_tmp_page(page_id):
+    path_p = "pages"
+    abs_path = os.path.join(UTIL_ABS_PATH, path_p, page_id)
+    tmp_path = os.path.join(UTIL_ABS_PATH, path_p, page_id + "_tmp")
+    if os.path.exists(tmp_path): return
+    else:
+        command = "cp {} {}".format(abs_path, tmp_path)
+        os.system(command)
+
+
+def replace_page_with_new_page():
+    page_id = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+    path_p = "pages"
+
+    for p in page_id:
+        abs_path = os.path.join(UTIL_ABS_PATH, path_p, p)
+        tmp_path = os.path.join(UTIL_ABS_PATH, path_p, p+"_tmp")
+
+        command = "cp {} {}".format(tmp_path, abs_path)
+        os.system(command)
+
+

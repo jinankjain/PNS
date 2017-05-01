@@ -60,7 +60,7 @@ def verify_signature_page_test(signature, page_path, page_id):
 
 
 def verify_signature_diff(signature, diff_content):
-    pub_key_path = "/Users/jinankjain/ETHZ/Research/PNS/src/pns.pub"
+    pub_key_path = os.path.join(SIG_ABS_PATH, PUB_KEY)
     vkey_hex = open(pub_key_path, "rb").read()
     verifying_key = ed25519.VerifyingKey(vkey_hex, encoding="hex")
     try:

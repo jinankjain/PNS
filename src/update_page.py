@@ -1,5 +1,13 @@
 import time
 from src.combine_diff import *
+import queue
+import threading
+from apscheduler.scheduler import Scheduler
+
+SAFE = True
+update_queue = queue.Queue()
+sched = Scheduler()
+DELAY = 3
 
 
 def update_page(page_id, fqdn_sha256, ns_record, page_path):
@@ -32,3 +40,31 @@ def copy_page(page_path, page_id, version):
     print(page_path)
     command = "cp {} {}".format(old_page_path, new_page_path)
     os.system(command)
+
+
+def process_request():
+    global SAFE
+    while True:
+        if not update_queue.empty() and SAFE:
+            item = update_queue.get()
+            update_page(item)
+            update_queue.task_done()
+        elif not SAFE:
+            replace_page_with_new_page()
+            SAFE = True
+
+
+@sched.interval_schedule(hours=DELAY)
+def scheduled_update():
+    global SAFE
+    SAFE = False
+    replace_page_with_new_page()
+
+
+# Register APS Scheduler to  update the pages
+sched.configure(misfire_grace_time=30)
+sched.start()
+
+t = threading.Thread(target=process_request)
+t.daemon = True
+t.start()
