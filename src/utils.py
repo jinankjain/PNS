@@ -1,4 +1,8 @@
 from src.crypto import *
+import csv
+import operator
+import netaddr
+import time
 
 UTIL_ABS_PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
@@ -63,4 +67,30 @@ def replace_page_with_new_page():
         command = "cp {} {}".format(tmp_path, abs_path)
         os.system(command)
 
+
+def sort_all_the_pages():
+    page_id = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+    path_p = "pages"
+
+    for p in page_id:
+        abs_path = os.path.join(UTIL_ABS_PATH, path_p, p)
+        sample = open(abs_path)
+        csv1 = csv.reader(sample, delimiter=' ')
+        sort = sorted(csv1, key=operator.itemgetter(0))
+        sample.close()
+        f = open(abs_path, 'w')
+        for eachline in sort:
+            ans = [eachline[0]]
+            for word in eachline[1:]:
+                try:
+                    ip = str(int(netaddr.IPAddress(word)))
+                    ans.append(ip)
+                except netaddr.core.AddrFormatError:
+                    ans.append(str(int(time.time())))
+                    break
+            f.write(' '.join(ans) + '\n')
+        f.close()
+
+
+# sort_all_the_pages()
 
