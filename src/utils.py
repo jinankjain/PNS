@@ -1,6 +1,7 @@
 from src.crypto import *
-import csv
+from src.combine_diff import *
 import operator
+import csv
 import netaddr
 import time
 
@@ -61,11 +62,10 @@ def replace_page_with_new_page():
     path_p = "pages"
 
     for p in page_id:
-        abs_path = os.path.join(UTIL_ABS_PATH, path_p, p)
-        tmp_path = os.path.join(UTIL_ABS_PATH, path_p, p+"_tmp")
-
-        command = "cp {} {}".format(tmp_path, abs_path)
-        os.system(command)
+        update_version(path_p, p+"_tmp")
+        diff = Diff()
+        new_version = get_page_current_version(path_p, p+"_tmp")
+        diff.generate_diffs(new_version, path_p, p)
 
 
 def sort_all_the_pages():

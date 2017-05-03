@@ -36,7 +36,7 @@ class Diff:
 
     def generate_diffs(self, new_version, page_id, page_path):
         curr_file_name = os.path.join(page_path, page_id)
-        update_file_name = os.path.join(page_path, page_id + "_" + str(new_version))
+        update_file_name = os.path.join(page_path, page_id + "_tmp")
         new_diff_file = os.path.join(page_path, page_id + "_" + str(new_version) + DIFF_SUFFIX)
         # Generate diffs
         command = "diff -u " + update_file_name + " " + curr_file_name + " > " + new_diff_file

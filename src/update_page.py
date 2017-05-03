@@ -11,27 +11,30 @@ DELAY = 3
 
 
 def update_page(page_id, fqdn_sha256, ns_record, page_path):
-    version = get_page_current_version(page_path, page_id)
-    version = str(int(version) + 1)
-    copy_page(page_path, page_id, version)
-    new_page_path = os.path.join(page_path, page_id+"_"+version)
-    update_version(page_path, page_id+"_"+version)
-    file = open(new_page_path, 'r')
-    iterf = iter(file)
-    line_no = 0
-    data = []
-    for line in iterf:
-        data = line.split()
-        if data[0] == fqdn_sha256:
+    # Check for tmp file exists or not
+    tmp_path = os.path.join(page_path, page_id+"_tmp")
+    orig_path = os.path.join(page_path, page_id)
+
+    # If not then create one
+    if not os.path.exists(tmp_path):
+        command = "cp {} {}".format(orig_path, tmp_path)
+        os.system(command)
+    # Else work on that copy
+    else:
+        file = open(tmp_path, 'r')
+        iterf = iter(file)
+        line_no = 0
+        data = []
+        for line in iterf:
+            data = line.split()
+            if data[0] == fqdn_sha256:
+                line_no += 1
+                break
             line_no += 1
-            break
-        line_no += 1
-    data = ' '.join([data[0], ns_record, time.strftime("%c")])
-    print(data)
-    command = "sed -i '' '{}s/.*/{}/' ".format(line_no, data) + new_page_path
-    os.system(command)
-    diff = Diff()
-    diff.generate_diffs(version, page_id, page_path)
+        data = ' '.join([data[0], ns_record, time.strftime("%c")])
+        print(data)
+        command = "sed -i '' '{}s/.*/{}/' ".format(line_no , data) + new_page_path
+        os.system(command)
 
 
 def copy_page(page_path, page_id, version):
@@ -58,7 +61,6 @@ def process_request():
 def scheduled_update():
     global SAFE
     SAFE = False
-    replace_page_with_new_page()
 
 
 # Register APS Scheduler to  update the pages
