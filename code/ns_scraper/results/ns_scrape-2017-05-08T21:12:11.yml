@@ -1,0 +1,23 @@
+google.com
+ns1.google.com. 216.239.32.10 172800
+ns2.google.com. 216.239.34.10 172800
+ns3.google.com. 216.239.36.10 172800
+ns4.google.com. 216.239.38.10 172800
+
+youtube.com
+ns1.google.com. 216.239.32.10 172800
+ns2.google.com. 216.239.34.10 172800
+ns3.google.com. 216.239.36.10 172800
+ns4.google.com. 216.239.38.10 172800
+
+facebook.com
+a.ns.facebook.com. 69.171.239.12 172800
+b.ns.facebook.com. 69.171.255.12 172800
+
+baidu.com
+dns.baidu.com. 202.108.22.220 172800
+ns2.baidu.com. 61.135.165.235 172800
+ns3.baidu.com. 220.181.37.10 172800
+ns4.baidu.com. 220.181.38.10 172800
+ns7.baidu.com. 180.76.76.92 172800
+
