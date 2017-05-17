@@ -3,3 +3,5 @@ Invoke
 Huey
 Redis
 apscheduler==2.1.2
+ed25519
+netaddr
