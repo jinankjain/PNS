@@ -7,7 +7,7 @@ import dns.rcode
 import dns.rdatatype
 import dns.resolver
 from dns.exception import DNSException
-from alexa_fetcher import get_top_domains
+from get_alexa_30k import get_30K_domains
 import argparse
 import logging
 import time
@@ -19,9 +19,9 @@ _error_logger = logging.getLogger('ErrorLogger')
 _console_logger = logging.getLogger('ConsoleLogger')
 
 _RESULTS_DIR = "results/"
-_ERROR_LOG = "error.out"
+_ERROR_DIR = "errors/"
 
-def _config_error_logger():
+def _config_error_logger(_ERROR_LOG):
     file_handler = logging.FileHandler(_ERROR_LOG, mode="w")
     formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
     file_handler.setFormatter(formatter)
@@ -56,13 +56,13 @@ def query_authoritative_ns (domain, outfile, log=lambda msg: None):
         # log('Looking up %s on %s' % (sub, ns))
         query = dns.message.make_query(sub, dns.rdatatype.NS)
         try:
-            response = dns.query.udp(query, ns, timeout=5)
+            response = dns.query.udp(query, ns, timeout=10)
 
             rcode = response.rcode()
             if rcode != dns.rcode.NOERROR:
                 _log_error("Received rcode %d" % response.rcode(),
                            domain)
-                return []
+                return [],[]
 
             if len(response.authority) > 0:
                 rrsets = response.authority
@@ -104,19 +104,15 @@ def query_authoritative_ns (domain, outfile, log=lambda msg: None):
                 i+=1
         except dns.exception.DNSException as error:
             _log_error(str(error), domain)
-            return []
+            return [], []
         except Exception as error:
             _console_logger.error("Captured an exception while handling %s:\n%s" %
                                   (domain, str(error)))
-            return []
+            return [], []
 
     new = zip(ns_name,ns_all)
     new = list(sorted(new))
-    print(domain, file=outfile)
-    for i in range(0, len(ns_name)):
-        print(new[i][0], new[i][1], ttl[i], file=outfile)
-    print(file=outfile)
-    return result, ns_all
+    return new, ttl
 
 import sys
 
@@ -125,8 +121,42 @@ def log (msg):
 
 def scrape(ndomains, outfile):
     report_threshold = max(int(ndomains / 100), 1)
-    for (idx, domain) in enumerate(get_top_domains(ndomains)):
-        query_authoritative_ns(domain, outfile, log)
+    res = get_30K_domains()
+    for i in range(len(res)):
+        new1, ttl1 = query_authoritative_ns(res[i][1], outfile, log)
+        new2, ttl2 = query_authoritative_ns(res[i][1], outfile, log)
+        new3, ttl3 = query_authoritative_ns(res[i][1], outfile, log)
+
+        if(len(new1)>0 and len(new2)>0 and len(new3)>0):
+            new = new1
+            ttl = ttl1
+            temp = len(new2)
+            while(i<temp):
+                found_match = False
+                for j in range(0, len(new)):
+                    if(new[j][0] == new2[i][0]):
+                        found_match = True
+                if not found_match:
+                    new.append(new2[i])
+                    ttl.append(ttl2[i])
+                i = i+1
+            temp = len(new3)
+            while(i<temp):
+                found_match = False
+                for j in range(0, len(new)):
+                    if(new[j][0] == new3[i][0]):
+                        found_match = True
+                if not found_match:
+                    new.append(new3[i])
+                    ttl.append(ttl3[i])
+                i = i+1
+            print(res[i][1], res[i][0], file=outfile)
+            for i in range(0, len(new)):
+                print(new[i][0], new[i][1], ttl[i], file=outfile)
+            print(file=outfile)
+        else:
+            print("Failed %s" % res[i][1])
+        idx = i
         if (idx + 1) % report_threshold == 0:
             progress_percentage = int((idx + 1) / ndomains * 100)
             _console_logger.info("Progress: %d of %d (%d%%)" %
@@ -140,11 +170,10 @@ if __name__ == "__main__":
                         type=int,
                         required=True)
     parser.add_argument("-n", dest="n", help="Top N domains", type=int,
-                        default=100000)
+                        default=30000)
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
     log_level = logging.DEBUG if args.debug else logging.INFO
-    _config_error_logger()
     _config_console_logger(log_level)
     scrape_interval_counter = 1
     while True:
@@ -153,6 +182,8 @@ if __name__ == "__main__":
         start_unix_secs = time.time()
         start = datetime.datetime.now()
         fname = "ns_scrape-" + start.strftime("%Y-%m-%dT%H:%M:%S") + ".yml"
+        epath = os.path.join(_ERROR_DIR, fname)
+        _config_error_logger(epath)
         path = os.path.join(_RESULTS_DIR, fname)
         _console_logger.info("Writing results to: %s" % path)
         # Open new file
