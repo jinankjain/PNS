@@ -14,7 +14,7 @@ def generate_pub_private_key():
 
 
 def compute_signature_page(page_path, page_id):
-    path = os.path.join(page_path, page_id)
+    path = os.path.join(SIG_ABS_PATH, page_path, page_id)
     page_data = open(path, 'r').read()
     priv_key_path = os.path.join(SIG_ABS_PATH, PRIV_KEY)
     seed = open(priv_key_path, "rb").read()
@@ -77,8 +77,7 @@ def generate_new_sig_files():
     for i in x:
         signature = compute_signature_page(path_p, i)
         sig = i+".sig"
-        sig = os.path.join(path_p, sig)
-        print(sig)
+        sig = os.path.join(SIG_ABS_PATH, path_p, sig)
         f = open(sig, "w+")
         f.write(str(signature, 'utf-8'))
 

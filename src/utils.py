@@ -51,10 +51,8 @@ def replace_page_with_new_page():
         path = os.path.join(path_p, p+"_tmp")
         if os.path.exists(path):
             result = update_version(path_p, p+"_tmp")
-            print(result)
             diff = Diff()
             new_version = get_page_current_version(path_p, p+"_tmp")
-            print(new_version)
             diff.generate_diffs(new_version, p, path_p)
 
     generate_new_sig_files()
