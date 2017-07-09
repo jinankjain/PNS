@@ -1,5 +1,5 @@
-from src.crypto import *
 from src.combine_diff import *
+from src.crypto import *
 import operator
 import csv
 import netaddr
@@ -33,20 +33,6 @@ def update_version( page_path, page_id ):
         result = "Error"
     return result
 
-
-def append_signature_diff(diff_path):
-    f = open(diff_path, 'r+')
-
-    # Skip first two lines
-    f.readline()
-    f.readline()
-    diff_content = ""
-    for c in f:
-        diff_content += c
-    signature = compute_signature_diff(diff_content)
-    f.write(signature.decode("utf-8"))
-
-
 def create_tmp_page(page_id):
     path_p = "pages"
     abs_path = os.path.join(UTIL_ABS_PATH, path_p, page_id)
@@ -59,13 +45,19 @@ def create_tmp_page(page_id):
 
 def replace_page_with_new_page():
     page_id = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
-    path_p = "pages"
+    path_p = os.path.join(UTIL_ABS_PATH, "pages")
 
     for p in page_id:
-        update_version(path_p, p+"_tmp")
-        diff = Diff()
-        new_version = get_page_current_version(path_p, p+"_tmp")
-        diff.generate_diffs(new_version, path_p, p)
+        path = os.path.join(path_p, p+"_tmp")
+        if os.path.exists(path):
+            result = update_version(path_p, p+"_tmp")
+            print(result)
+            diff = Diff()
+            new_version = get_page_current_version(path_p, p+"_tmp")
+            print(new_version)
+            diff.generate_diffs(new_version, p, path_p)
+
+    generate_new_sig_files()
 
 
 def sort_all_the_pages():

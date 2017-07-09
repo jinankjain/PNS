@@ -4,10 +4,12 @@ import queue
 import threading
 from apscheduler.scheduler import Scheduler
 
+from src.utils import *
+
 SAFE = True
 update_queue = queue.Queue()
 sched = Scheduler()
-DELAY = 3
+DELAY = 0.5
 
 
 def update_page(page_id, fqdn_sha256, ns_record, page_path):
@@ -19,22 +21,21 @@ def update_page(page_id, fqdn_sha256, ns_record, page_path):
     if not os.path.exists(tmp_path):
         command = "cp {} {}".format(orig_path, tmp_path)
         os.system(command)
-    # Else work on that copy
-    else:
-        file = open(tmp_path, 'r')
-        iterf = iter(file)
-        line_no = 0
-        data = []
-        for line in iterf:
-            data = line.split()
-            if data[0] == fqdn_sha256:
-                line_no += 1
-                break
+
+    file = open(tmp_path, 'r')
+    iterf = iter(file)
+    line_no = 0
+    data = []
+    for line in iterf:
+        data = line.split()
+        if data[0] == fqdn_sha256:
             line_no += 1
-        data = ' '.join([data[0], ns_record, time.strftime("%c")])
-        print(data)
-        command = "sed -i '' '{}s/.*/{}/' ".format(line_no , data) + new_page_path
-        os.system(command)
+            break
+        line_no += 1
+    data = ' '.join([data[0], ns_record, str(int(time.time()))])
+    print(data)
+    command = "sed -i '' '{}s/.*/{}/' ".format(line_no , data) + tmp_path
+    os.system(command)
 
 
 def copy_page(page_path, page_id, version):
@@ -50,14 +51,15 @@ def process_request():
     while True:
         if not update_queue.empty() and SAFE:
             item = update_queue.get()
-            update_page(item)
+            # print(*item)
+            update_page(*item)
             update_queue.task_done()
         elif not SAFE:
             replace_page_with_new_page()
             SAFE = True
 
 
-@sched.interval_schedule(hours=DELAY)
+@sched.interval_schedule(minutes=DELAY)
 def scheduled_update():
     global SAFE
     SAFE = False
